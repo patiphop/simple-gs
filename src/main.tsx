@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
-import { AppConfig, ResultItem, RequestParams, PostData } from './types';
+import { AppConfig, ResultItem, RequestParams, PostData, ApiEndpoint } from './types';
 import { 
-  sendGetRequest, 
-  sendPostRequest, 
+  sendRootGetRequest,
+  sendRootPostRequest,
+  sendApiGetRequest,
+  sendApiPostRequest,
+  sendHealthCheckRequest,
+  sendStatsRequest,
+  sendTestGetRequest,
+  sendTestPostRequest,
   isValidUrl
 } from './utils/api';
 import ConfigSection from './components/ConfigSection';
@@ -20,6 +26,7 @@ const App: React.FC = () => {
     getParams: 'action=test&source=webapp'
   });
 
+  const [selectedEndpoint, setSelectedEndpoint] = useState<ApiEndpoint>('');
   const [results, setResults] = useState<ResultItem[]>([]);
   const [isRequestInProgress, setIsRequestInProgress] = useState(false);
   const [urlDisplay, setUrlDisplay] = useState('');
@@ -34,6 +41,11 @@ const App: React.FC = () => {
         const savedConfig = JSON.parse(saved);
         setConfig(prev => ({ ...prev, ...savedConfig }));
       }
+      
+      const savedEndpoint = localStorage.getItem('gscriptTesterEndpoint');
+      if (savedEndpoint) {
+        setSelectedEndpoint(savedEndpoint as ApiEndpoint);
+      }
     } catch (error) {
       console.error('Error loading saved config:', error);
     }
@@ -46,12 +58,14 @@ const App: React.FC = () => {
     if (url && url !== 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec') {
       try {
         const urlObj = new URL(url);
+        const endpointPath = selectedEndpoint ? ` (${selectedEndpoint})` : '';
         setUrlDisplay(`
           <strong>URL Components:</strong><br>
           Protocol: ${urlObj.protocol}<br>
           Hostname: ${urlObj.hostname}<br>
           Pathname: ${urlObj.pathname}<br>
-          Script ID: ${urlObj.pathname.split('/').pop()}
+          Script ID: ${urlObj.pathname.split('/').pop()}<br>
+          Endpoint: ${endpointPath || 'Root (/)'}
         `);
         setShowUrlDisplay(true);
       } catch (error) {
@@ -61,12 +75,18 @@ const App: React.FC = () => {
     } else {
       setShowUrlDisplay(false);
     }
-  }, [config.scriptUrl]);
+  }, [config.scriptUrl, selectedEndpoint]);
 
   // Save configuration to localStorage
   const handleConfigChange = useCallback((newConfig: AppConfig) => {
     setConfig(newConfig);
     localStorage.setItem('gscriptTesterConfig', JSON.stringify(newConfig));
+  }, []);
+
+  // Save endpoint selection to localStorage
+  const handleEndpointChange = useCallback((endpoint: ApiEndpoint) => {
+    setSelectedEndpoint(endpoint);
+    localStorage.setItem('gscriptTesterEndpoint', endpoint);
   }, []);
 
   // Show message helper
@@ -84,7 +104,7 @@ const App: React.FC = () => {
     setResults(prev => [result, ...prev]);
   }, []);
 
-  // Send GET request
+  // Send GET request with endpoint
   const handleGetRequest = useCallback(async () => {
     if (isRequestInProgress) return;
 
@@ -98,37 +118,59 @@ const App: React.FC = () => {
 
     try {
       const params = parseQueryString(config.getParams);
-      const { data, duration } = await sendGetRequest(url, params);
+      let response;
+
+      // ใช้ endpoint function ที่เหมาะสม
+      switch (selectedEndpoint) {
+        case '/health':
+          response = await sendHealthCheckRequest(url);
+          break;
+        case '/stats':
+          response = await sendStatsRequest(url);
+          break;
+        case '/test':
+          response = await sendTestGetRequest(url);
+          break;
+        case '/api':
+          response = await sendApiGetRequest(url, params);
+          break;
+        default:
+          response = await sendRootGetRequest(url, params);
+      }
+
+      const { data, duration } = response;
 
       const result: ResultItem = {
         method: 'GET',
         success: true,
         statusCode: 200,
         duration,
+        endpoint: selectedEndpoint,
         responseData: data,
         requestData: params,
         timestamp: new Date().toLocaleString('th-TH')
       };
 
       addResultItem(result);
-      showMessage('success', 'GET request successful!');
+      showMessage('success', `GET request to ${selectedEndpoint || 'root'} endpoint successful!`);
 
     } catch (error) {
       const result: ResultItem = {
         method: 'GET',
         success: false,
+        endpoint: selectedEndpoint,
         errorMessage: error instanceof Error ? error.message : 'Unknown error occurred',
         timestamp: new Date().toLocaleString('th-TH')
       };
 
       addResultItem(result);
-      showMessage('error', `GET request failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      showMessage('error', `GET request to ${selectedEndpoint || 'root'} endpoint failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsRequestInProgress(false);
     }
-  }, [config.scriptUrl, config.getParams, isRequestInProgress, showMessage, addResultItem]);
+  }, [config.scriptUrl, config.getParams, selectedEndpoint, isRequestInProgress, showMessage, addResultItem]);
 
-  // Send POST request
+  // Send POST request with endpoint
   const handlePostRequest = useCallback(async () => {
     if (isRequestInProgress) return;
 
@@ -149,35 +191,51 @@ const App: React.FC = () => {
     setIsRequestInProgress(true);
 
     try {
-      const { data, duration } = await sendPostRequest(url, postData);
+      let response;
+
+      // ใช้ endpoint function ที่เหมาะสม
+      switch (selectedEndpoint) {
+        case '/test':
+          response = await sendTestPostRequest(url, postData);
+          break;
+        case '/api':
+          response = await sendApiPostRequest(url, postData);
+          break;
+        default:
+          response = await sendRootPostRequest(url, postData);
+      }
+
+      const { data, duration } = response;
 
       const result: ResultItem = {
         method: 'POST',
         success: true,
         statusCode: 200,
         duration,
+        endpoint: selectedEndpoint,
         responseData: data,
         requestData: postData,
         timestamp: new Date().toLocaleString('th-TH')
       };
 
       addResultItem(result);
-      showMessage('success', 'POST request successful!');
+      showMessage('success', `POST request to ${selectedEndpoint || 'root'} endpoint successful!`);
 
     } catch (error) {
       const result: ResultItem = {
         method: 'POST',
         success: false,
+        endpoint: selectedEndpoint,
         errorMessage: error instanceof Error ? error.message : 'Unknown error occurred',
         timestamp: new Date().toLocaleString('th-TH')
       };
 
       addResultItem(result);
-      showMessage('error', `POST request failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      showMessage('error', `POST request to ${selectedEndpoint || 'root'} endpoint failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsRequestInProgress(false);
     }
-  }, [config.scriptUrl, config.postData, isRequestInProgress, showMessage, addResultItem]);
+  }, [config.scriptUrl, config.postData, selectedEndpoint, isRequestInProgress, showMessage, addResultItem]);
 
   // Test both requests
   const handleTestBoth = useCallback(async () => {
@@ -230,6 +288,8 @@ const App: React.FC = () => {
               onConfigChange={handleConfigChange}
               urlDisplay={urlDisplay}
               showUrlDisplay={showUrlDisplay}
+              selectedEndpoint={selectedEndpoint}
+              onEndpointChange={handleEndpointChange}
             />
 
             {/* Buttons Section */}

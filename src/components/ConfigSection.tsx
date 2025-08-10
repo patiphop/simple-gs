@@ -1,18 +1,22 @@
 import React from 'react';
-import { AppConfig } from '../types';
+import { AppConfig, ApiEndpoint } from '../types';
 
 interface ConfigSectionProps {
   config: AppConfig;
   onConfigChange: (config: AppConfig) => void;
   urlDisplay: string;
   showUrlDisplay: boolean;
+  selectedEndpoint: ApiEndpoint;
+  onEndpointChange: (endpoint: ApiEndpoint) => void;
 }
 
 const ConfigSection: React.FC<ConfigSectionProps> = ({
   config,
   onConfigChange,
   urlDisplay,
-  showUrlDisplay
+  showUrlDisplay,
+  selectedEndpoint,
+  onEndpointChange
 }) => {
   const handleInputChange = (field: keyof AppConfig, value: string) => {
     onConfigChange({
@@ -24,6 +28,11 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
   const handleUrlBlur = () => {
     // Save to localStorage
     localStorage.setItem('gscriptTesterConfig', JSON.stringify(config));
+  };
+
+  const handleEndpointChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const endpoint = e.target.value as ApiEndpoint;
+    onEndpointChange(endpoint);
   };
 
   return (
@@ -59,6 +68,32 @@ const ConfigSection: React.FC<ConfigSectionProps> = ({
           )}
           <small className="text-gray-600 text-sm mt-2 block">
             ใส่ Google Apps Script URL ที่ถูกต้อง
+          </small>
+        </div>
+
+        {/* Endpoint Selection */}
+        <div>
+          <label 
+            htmlFor="endpoint" 
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            API Endpoint:
+          </label>
+          <select
+            id="endpoint"
+            value={selectedEndpoint}
+            onChange={handleEndpointChange}
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-base transition-colors focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100"
+            aria-label="Select API endpoint"
+          >
+            <option value="">Root (/) - Welcome & Basic Info</option>
+            <option value="/api">/api - API Endpoint</option>
+            <option value="/health">/health - Health Check</option>
+            <option value="/stats">/stats - Server Statistics</option>
+            <option value="/test">/test - Test Endpoint</option>
+          </select>
+          <small className="text-gray-600 text-sm mt-2 block">
+            เลือก endpoint ที่ต้องการทดสอบ
           </small>
         </div>
 

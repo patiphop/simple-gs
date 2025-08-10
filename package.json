@@ -1,0 +1,24 @@
+{
+  "name": "simple-gs",
+  "version": "1.0.0",
+  "description": "Simple Google Apps Script Webapp Tester with React & TypeScript",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "deploy": "npm run build && git add . && git commit -m 'Deploy to GitHub Pages' && git push origin main"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^7.1.1"
+  }
+}

@@ -1,156 +1,133 @@
-# 🚀 Google Apps Script Webapp Tester
+# Google Script Client
 
-โปรเจคทดสอบการเชื่อมต่อ GET/POST requests ไปยัง Google Apps Script webapp ที่สร้างด้วย **React** และ **TypeScript**
+A modern React application for testing Google Apps Script endpoints with a beautiful, responsive UI built with Tailwind CSS v4.
 
-## ✨ คุณสมบัติ
+## 🚀 **Latest Update: Tailwind CSS v4 Upgrade**
 
-- 🎯 **React Components**: แยก components เป็นส่วนๆ เพื่อการจัดการที่ดี
-- 🔒 **TypeScript**: Type-safe code พร้อม interfaces และ types
-- 🎨 **Tailwind CSS**: UI ที่สวยงามและ responsive
-- 💾 **Local Storage**: บันทึกการตั้งค่าไว้ใน browser
-- 📱 **Responsive Design**: รองรับทุกขนาดหน้าจอ
-- ♿ **Accessibility**: รองรับ screen readers และ keyboard navigation
+This project has been successfully upgraded to **Tailwind CSS v4.1.11** with the following improvements:
 
-## 🏗️ โครงสร้างโปรเจค
+### **New Features & Enhancements:**
+- ✨ **Glass Morphism Effects**: Added `glass-effect` utility class for modern UI
+- 🎨 **Gradient Text**: New `gradient-text` utility for beautiful typography
+- 📱 **Improved Responsiveness**: Better mobile-first design approach
+- 🎭 **Enhanced Animations**: Smoother transitions and micro-interactions
+- 🚀 **Performance Optimizations**: Faster build times and smaller CSS output
+- 🎯 **Modern CSS Features**: Better support for latest CSS standards
 
-```
-simple-gs/
-├── src/
-│   ├── components/          # React components
-│   │   ├── ConfigSection.tsx
-│   │   ├── ButtonsSection.tsx
-│   │   ├── ResultsSection.tsx
-│   │   ├── ResultItem.tsx
-│   │   └── Message.tsx
-│   ├── types/              # TypeScript interfaces
-│   │   └── index.ts
-│   ├── utils/              # Utility functions
-│   │   └── api.ts
-│   ├── main.tsx            # Main React app
-│   └── index.html          # HTML entry point
-├── Code.gs                 # Google Apps Script server
-├── package.json            # Dependencies
-├── tsconfig.json           # TypeScript config
-└── vite.config.ts          # Vite build config
+### **New Utility Classes:**
+```css
+.glass-effect          /* Glass morphism with backdrop blur */
+.gradient-text         /* Gradient text with background clip */
+.text-balance          /* Balanced text wrapping */
+.text-pretty          /* Pretty text formatting */
+.scrollbar-hide       /* Hidden scrollbars */
 ```
 
-## 🚀 การติดตั้งและใช้งาน
+## 🛠 **Tech Stack**
 
-### 1. ติดตั้ง Dependencies
+- **Frontend**: React 19.1.1 + Vite 7.1.0
+- **Styling**: Tailwind CSS 4.1.11
+- **Icons**: Heroicons 2.2.0
+- **UI Components**: Headless UI 2.2.7
+- **Build Tool**: Vite with PostCSS optimization
 
+## 🚀 **Getting Started**
+
+### **Prerequisites**
+- Node.js 18+ 
+- npm or yarn
+
+### **Installation**
 ```bash
+# Clone the repository
+git clone <your-repo-url>
+cd simple-gs
+
+# Install dependencies
 npm install
-```
 
-### 2. รัน Development Server
-
-```bash
+# Start development server
 npm run dev
-```
 
-### 3. Build สำหรับ Production
-
-```bash
+# Build for production
 npm run build
 ```
 
-### 4. Type Checking
+## 🎨 **Tailwind CSS v4 Features**
 
-```bash
-npm run type-check
-```
+### **Configuration**
+The project uses the latest Tailwind v4 configuration with:
+- Modern CSS-in-JS approach
+- Optimized PostCSS pipeline
+- Production-ready CSS minification
+- Enhanced tree-shaking
 
-### 5. Deploy ไปยัง GitHub Pages
-
-```bash
-npm run deploy
-```
-
-## 🔧 การตั้งค่า Google Apps Script
-
-### 1. อัปโหลด Code.gs ไปยัง Google Apps Script
-### 2. Deploy เป็น webapp
-### 3. ใช้ URL ที่ได้ในแอปพลิเคชัน
-
-## 🎯 Components หลัก
-
-### ConfigSection
-- การตั้งค่า Google Apps Script URL
-- POST Data (JSON format)
-- GET Parameters
-
-### ButtonsSection
-- Test GET Request
-- Test POST Request
-- Test Both
-- Clear Results
-
-### ResultsSection
-- แสดงผลลัพธ์การทดสอบ
-- จัดการข้อมูลแบบ real-time
-
-### Message
-- แสดง error/success messages
-- Auto-dismiss หลังจาก 5 วินาที
-
-## 📊 TypeScript Interfaces
-
-```typescript
-interface AppConfig {
-  scriptUrl: string;
-  postData: string;
-  getParams: string;
+### **Custom Components**
+```css
+/* Enhanced button styles with v4 features */
+.btn-primary {
+  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 active:scale-95;
 }
 
-interface ServerResponse {
-  success: boolean;
-  method: 'GET' | 'POST';
-  timestamp: string;
-  // ... more properties
-}
-
-interface ResultItem {
-  method: 'GET' | 'POST';
-  success: boolean;
-  statusCode?: number;
-  duration?: number;
-  // ... more properties
+/* Glass morphism cards */
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 backdrop-blur-sm;
 }
 ```
 
-## 🎨 Styling
+## 🔧 **Development**
 
-ใช้ **Tailwind CSS** สำหรับ styling ทั้งหมด:
-- Responsive grid system
-- Gradient backgrounds
-- Smooth animations
-- Modern UI components
+### **Available Scripts**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-## 🔒 Security Features
+### **Project Structure**
+```
+src/
+├── App.jsx           # Main application component
+├── index.css         # Tailwind CSS imports + custom styles
+└── main.jsx         # Application entry point
+```
 
-- Input validation
-- Error handling
-- CORS headers ใน Google Apps Script
-- Safe JSON parsing
+## 🌟 **Key Features**
 
-## 📱 Responsive Design
+- **Real-time API Testing**: Test Google Apps Script endpoints
+- **Beautiful UI**: Modern design with glass morphism effects
+- **Responsive Design**: Mobile-first approach
+- **Performance Monitoring**: Response time tracking
+- **Error Handling**: Comprehensive error states
+- **Data Visualization**: Structured response display
 
+## 📱 **Responsive Design**
+
+The application is fully responsive with:
 - Mobile-first approach
-- Grid layout ที่ปรับตัวได้
-- Touch-friendly buttons
-- Optimized สำหรับทุกขนาดหน้าจอ
+- Flexible grid layouts
+- Adaptive typography
+- Touch-friendly interactions
+- Optimized for all screen sizes
 
-## 🚀 Performance
+## 🎯 **Performance**
 
-- React hooks optimization
-- Memoized callbacks
-- Efficient state management
-- Lazy loading components
+- **Tailwind v4 Optimizations**: Faster builds and smaller CSS
+- **CSS Minification**: Production-ready with cssnano
+- **Tree Shaking**: Unused CSS removal
+- **Lazy Loading**: Optimized component loading
 
-## 📝 License
+## 🔮 **Future Enhancements**
 
-MIT License - ใช้งานได้อย่างอิสระ
+- Dark mode support
+- Custom theme builder
+- Advanced animations
+- Performance analytics
+- Accessibility improvements
+
+## 📄 **License**
+
+This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-สร้างด้วย ❤️ โดยใช้ React + TypeScript + Tailwind CSS
+**Built with ❤️ using React + Vite + Tailwind CSS v4**
